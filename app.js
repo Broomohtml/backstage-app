@@ -2,7 +2,7 @@
 // Cambia SOLO questo numero a ogni modifica, prima di ricaricare i file su GitHub.
 // Compare accanto a BACKSTAGE in alto: serve a capire a colpo d'occhio
 // se il telefono sta girando la versione vecchia o quella nuova.
-const APP_VERSION = 'v2';
+const APP_VERSION = 'v3';
 
 // ---------- storage helpers ----------
 const SETTINGS_KEY = 'backstage_settings_v1';
@@ -29,10 +29,8 @@ const closeSettingsBtn = document.getElementById('closeSettingsBtn');
 const settingsModal = document.getElementById('settingsModal');
 const apiKeyInput = document.getElementById('apiKeyInput');
 const groqKeyInput = document.getElementById('groqKeyInput');
-const vocabInput = document.getElementById('vocabInput');
 const ghTokenInput = document.getElementById('ghTokenInput');
 const ghRepoInput = document.getElementById('ghRepoInput');
-const projectsInput = document.getElementById('projectsInput');
 const saveSettingsBtn = document.getElementById('saveSettingsBtn');
 
 const noteText = document.getElementById('noteText');
@@ -52,15 +50,87 @@ const logEmpty = document.getElementById('logEmpty');
 
 let pendingImageBase64 = null; // { data, mime }
 
+// ---------- editor a etichette (progetti e vocabolario) ----------
+// Una voce alla volta, invece di un testone da scrivere a mano sul telefono.
+// Incollandone tante separate da virgola vengono aggiunte come voci distinte.
+function createChipEditor(listEl, inputEl, addBtn, emptyText){
+  let items = [];
+
+  function render(){
+    listEl.innerHTML = '';
+    if(items.length === 0){
+      const p = document.createElement('p');
+      p.className = 'chip-empty';
+      p.textContent = emptyText;
+      listEl.appendChild(p);
+      return;
+    }
+    items.forEach((val, i)=>{
+      const chip = document.createElement('span');
+      chip.className = 'chip';
+
+      const label = document.createElement('span');
+      label.className = 'chip-label';
+      label.textContent = val;
+
+      const x = document.createElement('button');
+      x.type = 'button';
+      x.className = 'chip-x';
+      x.textContent = '✕';
+      x.setAttribute('aria-label', 'Rimuovi ' + val);
+      x.addEventListener('click', ()=>{ items.splice(i, 1); render(); });
+
+      chip.appendChild(label);
+      chip.appendChild(x);
+      listEl.appendChild(chip);
+    });
+  }
+
+  function add(){
+    const parts = inputEl.value.split(/[,;\n]/).map(s => s.trim()).filter(Boolean);
+    parts.forEach(p=>{
+      const doppione = items.some(v => v.toLowerCase() === p.toLowerCase());
+      if(!doppione) items.push(p);
+    });
+    inputEl.value = '';
+    render();
+    inputEl.focus();
+  }
+
+  addBtn.addEventListener('click', add);
+  inputEl.addEventListener('keydown', (e)=>{
+    if(e.key === 'Enter'){ e.preventDefault(); add(); }
+  });
+
+  return {
+    set(list){ items = (list || []).slice(); render(); },
+    get(){ return items.slice(); }
+  };
+}
+
+const projectsEditor = createChipEditor(
+  document.getElementById('projectsChips'),
+  document.getElementById('projectAddInput'),
+  document.getElementById('projectAddBtn'),
+  'Nessun progetto ancora.'
+);
+
+const vocabEditor = createChipEditor(
+  document.getElementById('vocabChips'),
+  document.getElementById('vocabAddInput'),
+  document.getElementById('vocabAddBtn'),
+  'Nessun termine ancora.'
+);
+
 // ---------- settings modal ----------
 function openSettings(){
   const s = getSettings();
   apiKeyInput.value = s.apiKey || '';
   groqKeyInput.value = s.groqKey || '';
-  vocabInput.value = s.vocab || '';
   ghTokenInput.value = s.ghToken || '';
   ghRepoInput.value = s.ghRepo || '';
-  projectsInput.value = (s.projects || []).join('\n');
+  projectsEditor.set(s.projects || []);
+  vocabEditor.set(s.vocab ? s.vocab.split(',').map(v => v.trim()).filter(Boolean) : []);
   settingsModal.classList.remove('hidden');
 }
 function closeSettings(){ settingsModal.classList.add('hidden'); }
@@ -70,14 +140,13 @@ closeSettingsBtn.addEventListener('click', closeSettings);
 settingsModal.addEventListener('click', (e)=>{ if(e.target === settingsModal) closeSettings(); });
 
 saveSettingsBtn.addEventListener('click', ()=>{
-  const projects = projectsInput.value.split('\n').map(p=>p.trim()).filter(Boolean);
   saveSettingsToStorage({
     apiKey: apiKeyInput.value.trim(),
     groqKey: groqKeyInput.value.trim(),
-    vocab: vocabInput.value.trim(),
+    vocab: vocabEditor.get().join(', '),
     ghToken: ghTokenInput.value.trim(),
     ghRepo: ghRepoInput.value.trim(),
-    projects
+    projects: projectsEditor.get()
   });
   closeSettings();
   refreshSaveButton();
