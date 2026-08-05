@@ -2,7 +2,7 @@
 // Cambia SOLO questo numero a ogni modifica, prima di ricaricare i file su GitHub.
 // Compare accanto a BACKSTAGE in alto: serve a capire a colpo d'occhio
 // se il telefono sta girando la versione vecchia o quella nuova.
-const APP_VERSION = 'v3';
+const APP_VERSION = 'v4';
 
 // ---------- storage helpers ----------
 const SETTINGS_KEY = 'backstage_settings_v1';
@@ -472,8 +472,30 @@ saveBtn.addEventListener('click', async ()=>{
   }
 });
 
+// ---------- forza aggiornamento ----------
+// Scorciatoia per quando il telefono resta incollato a una versione vecchia:
+// butta via service worker e cache, poi ricarica da un indirizzo mai visto.
+// NON tocca le impostazioni: chiavi, progetti e vocabolario restano dove sono.
+document.getElementById('forceUpdateBtn').addEventListener('click', async ()=>{
+  setStatus('Aggiorno…');
+  try{
+    if('serviceWorker' in navigator){
+      const regs = await navigator.serviceWorker.getRegistrations();
+      await Promise.all(regs.map(r => r.unregister()));
+    }
+    if(window.caches){
+      const keys = await caches.keys();
+      await Promise.all(keys.map(k => caches.delete(k)));
+    }
+  }catch(e){
+    console.error(e); // anche se la pulizia fallisce, la ricarica va tentata
+  }
+  location.replace(location.pathname + '?u=' + Date.now());
+});
+
 // ---------- init ----------
 document.getElementById('appVersion').textContent = APP_VERSION;
+document.getElementById('appVersionFoot').textContent = APP_VERSION;
 renderLog();
 refreshSaveButton();
 
