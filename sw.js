@@ -1,4 +1,8 @@
-const CACHE_NAME = 'backstage-shell-v1';
+// Strategia: NETWORK-FIRST.
+// Si prova sempre la rete: così ogni modifica caricata su GitHub arriva subito,
+// senza dover ricordarsi di cambiare il numero di versione della cache.
+// La cache serve solo come rete di sicurezza quando il telefono è offline.
+const CACHE_NAME = 'backstage-shell';
 const SHELL_FILES = ['./', './index.html', './style.css', './app.js', './manifest.json'];
 
 self.addEventListener('install', (event)=>{
@@ -17,13 +21,22 @@ self.addEventListener('activate', (event)=>{
   self.clients.claim();
 });
 
-// App shell files: cache-first. Everything else (API calls): always network.
 self.addEventListener('fetch', (event)=>{
-  const url = new URL(event.request.url);
-  const isShellFile = SHELL_FILES.some(f => url.pathname.endsWith(f.replace('./','')));
-  if(!isShellFile) return; // let API/network calls pass through untouched
+  const req = event.request;
+
+  // Tocchiamo solo i file di questa app: le chiamate a Groq, Claude e GitHub
+  // devono passare intatte (sono POST e su altri domini).
+  if(req.method !== 'GET') return;
+  if(new URL(req.url).origin !== self.location.origin) return;
 
   event.respondWith(
-    caches.match(event.request).then(cached => cached || fetch(event.request))
+    fetch(req)
+      .then(res => {
+        // Copia aggiornata in cache per il prossimo avvio offline.
+        const copy = res.clone();
+        caches.open(CACHE_NAME).then(cache => cache.put(req, copy));
+        return res;
+      })
+      .catch(() => caches.match(req)) // offline: si usa l'ultima versione salvata
   );
 });
