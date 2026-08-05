@@ -1,3 +1,9 @@
+// ---------- versione app ----------
+// Cambia SOLO questo numero a ogni modifica, prima di ricaricare i file su GitHub.
+// Compare accanto a BACKSTAGE in alto: serve a capire a colpo d'occhio
+// se il telefono sta girando la versione vecchia o quella nuova.
+const APP_VERSION = 'v2';
+
 // ---------- storage helpers ----------
 const SETTINGS_KEY = 'backstage_settings_v1';
 const LOG_KEY = 'backstage_log_v1';
@@ -75,6 +81,17 @@ saveSettingsBtn.addEventListener('click', ()=>{
   });
   closeSettings();
   refreshSaveButton();
+});
+
+// ---------- tab delle impostazioni ----------
+const settingsTabs = document.querySelectorAll('.tab');
+const settingsPanels = document.querySelectorAll('.tab-panel');
+settingsTabs.forEach(tab=>{
+  tab.addEventListener('click', ()=>{
+    const target = tab.dataset.tab;
+    settingsTabs.forEach(t => t.classList.toggle('is-active', t === tab));
+    settingsPanels.forEach(p => p.classList.toggle('is-active', p.dataset.panel === target));
+  });
 });
 
 // first run: open settings automatically if nothing configured
@@ -387,6 +404,7 @@ saveBtn.addEventListener('click', async ()=>{
 });
 
 // ---------- init ----------
+document.getElementById('appVersion').textContent = APP_VERSION;
 renderLog();
 refreshSaveButton();
 
