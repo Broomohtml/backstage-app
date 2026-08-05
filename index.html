@@ -99,16 +99,24 @@
 
     <!-- TAB: PROGETTI -->
     <div class="tab-panel" data-panel="progetti">
-      <label class="field-label" for="projectsInput">I tuoi progetti (uno per riga)</label>
-      <textarea id="projectsInput" rows="10" placeholder="Es:&#10;NO PRESS&#10;Bomba Valorant&#10;Backstage (app)"></textarea>
-      <p class="field-hint">Backstage userà questi nomi per capire dove smistare ogni appunto. Se non c'entra con nessuno, finisce in “Da rivedere”.</p>
+      <label class="field-label">I tuoi progetti</label>
+      <div id="projectsChips" class="chip-list"></div>
+      <div class="chip-add">
+        <input type="text" id="projectAddInput" placeholder="Nome del progetto" autocomplete="off" autocapitalize="sentences" spellcheck="false">
+        <button type="button" class="chip-add-btn" id="projectAddBtn" aria-label="Aggiungi progetto">+</button>
+      </div>
+      <p class="field-hint">Backstage usa questi nomi per capire dove smistare ogni appunto. Se un appunto non c'entra con nessuno, finisce in “Da rivedere”.</p>
     </div>
 
     <!-- TAB: VOCABOLARIO -->
     <div class="tab-panel" data-panel="vocabolario">
-      <label class="field-label" for="vocabInput">Vocabolario tecnico (termini che usi spesso)</label>
-      <textarea id="vocabInput" rows="10" placeholder="Es: Arduino, ESP32, Fusion 360, kanban, laser, stampante 3D"></textarea>
-      <p class="field-hint">Non è un elenco di progetti: aiuta la trascrizione a riconoscere i tuoi termini tecnici quando parli veloce.</p>
+      <label class="field-label">Vocabolario tecnico</label>
+      <div id="vocabChips" class="chip-list"></div>
+      <div class="chip-add">
+        <input type="text" id="vocabAddInput" placeholder="Termine, o più separati da virgola" autocomplete="off" autocapitalize="off" spellcheck="false">
+        <button type="button" class="chip-add-btn" id="vocabAddBtn" aria-label="Aggiungi termine">+</button>
+      </div>
+      <p class="field-hint">Non sono progetti: aiutano la trascrizione a riconoscere i tuoi termini tecnici quando parli veloce.</p>
     </div>
 
     <button id="saveSettingsBtn" class="primary-btn full">Salva impostazioni</button>
