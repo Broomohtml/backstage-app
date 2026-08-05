@@ -288,8 +288,51 @@ textarea:focus, input:focus{
   display:none;
   flex-direction:column;
   gap:10px;
+  /* Altezza uguale per tutte e tre: cambiando scheda il pannello
+     non si accorcia e i bottoni non ballano su e giù. */
+  min-height:372px;
 }
 .tab-panel.is-active{display:flex;}
+
+/* ---- liste a etichette (progetti, vocabolario) ---- */
+.chip-list{
+  display:flex;flex-wrap:wrap;gap:6px;
+  align-content:flex-start;
+  min-height:150px;max-height:210px;overflow-y:auto;
+  background:var(--surface-2);
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:10px;
+}
+.chip{
+  display:inline-flex;align-items:center;gap:4px;
+  max-width:100%;
+  background:var(--bg);
+  border:1px solid var(--line);
+  border-radius:999px;
+  padding:5px 5px 5px 11px;
+  font-size:13px;
+}
+.chip-label{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.chip-x{
+  flex:0 0 auto;
+  background:none;border:none;
+  color:var(--text-muted);
+  font-size:10px;line-height:1;
+  padding:4px 5px;cursor:pointer;
+}
+.chip-x:active{color:var(--danger);}
+.chip-empty{color:var(--text-muted);font-size:12.5px;margin:0;}
+.chip-add{display:flex;gap:8px;}
+.chip-add input{flex:1;min-width:0;}
+.chip-add-btn{
+  flex:0 0 46px;
+  background:var(--amber);color:#1B1200;
+  border:none;border-radius:10px;
+  font-size:22px;line-height:1;font-weight:600;
+  cursor:pointer;
+}
+.chip-add-btn:active{transform:scale(.96);}
 
 .field-label{
   font-family:var(--mono);
