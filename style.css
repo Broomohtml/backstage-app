@@ -15,6 +15,10 @@
 
 *{box-sizing:border-box;}
 html,body{margin:0;padding:0;}
+html{
+  /* iOS: impedisce il ridimensionamento automatico del testo in orizzontale */
+  -webkit-text-size-adjust:100%;
+}
 body{
   background:var(--bg);
   color:var(--text);
@@ -22,6 +26,11 @@ body{
   min-height:100vh;
   padding-bottom:env(safe-area-inset-bottom);
   -webkit-font-smoothing:antialiased;
+  /* Comportamento da app, non da sito: niente zoom col doppio tap,
+     niente scroll laterale, niente effetto elastico a fine pagina. */
+  touch-action:manipulation;
+  overflow-x:hidden;
+  overscroll-behavior:none;
 }
 
 /* ---- topbar ---- */
@@ -41,6 +50,12 @@ body{
   width:8px;height:8px;border-radius:50%;
   background:var(--amber);
   box-shadow:0 0 8px var(--amber);
+}
+.wordmark-ver{
+  font-size:10px;
+  letter-spacing:.08em;
+  color:var(--amber);
+  opacity:.75;
 }
 .icon-btn{
   background:none;border:none;color:var(--text-muted);
@@ -127,7 +142,9 @@ textarea, input[type=text], input[type=password]{
   border-radius:10px;
   color:var(--text);
   font-family:var(--sans);
-  font-size:15px;
+  /* 16px non è estetica: sotto questa soglia iOS zooma da solo
+     quando tocchi un campo, e l'app sembra un sito. Non abbassarlo. */
+  font-size:16px;
   padding:12px;
   resize:vertical;
 }
@@ -162,7 +179,7 @@ textarea:focus, input:focus{
 .primary-btn:disabled{
   background:var(--line);color:var(--text-muted);cursor:not-allowed;
 }
-.primary-btn.full{width:100%;margin-top:6px;padding:13px;}
+.primary-btn.full{width:100%;margin-top:14px;padding:13px;}
 
 .image-preview-wrap{
   position:relative;margin-top:10px;
@@ -242,6 +259,38 @@ textarea:focus, input:focus{
 }
 .modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
 .modal-head h2{margin:0;font-size:17px;}
+
+/* ---- tab impostazioni ---- */
+.tabs{
+  display:flex;
+  gap:2px;
+  border-bottom:1px solid var(--line);
+  margin-bottom:2px;
+}
+.tab{
+  flex:1;
+  background:none;
+  border:none;
+  border-bottom:2px solid transparent;
+  color:var(--text-muted);
+  font-family:var(--mono);
+  font-size:10.5px;
+  letter-spacing:.1em;
+  padding:11px 2px;
+  cursor:pointer;
+  white-space:nowrap;
+}
+.tab.is-active{
+  color:var(--amber);
+  border-bottom-color:var(--amber);
+}
+.tab-panel{
+  display:none;
+  flex-direction:column;
+  gap:10px;
+}
+.tab-panel.is-active{display:flex;}
+
 .field-label{
   font-family:var(--mono);
   font-size:11px;letter-spacing:.08em;
