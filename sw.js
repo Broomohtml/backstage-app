@@ -29,8 +29,11 @@ self.addEventListener('fetch', (event)=>{
   if(req.method !== 'GET') return;
   if(new URL(req.url).origin !== self.location.origin) return;
 
+  // cache:'no-store' salta anche la cache HTTP del browser: senza questo il
+  // telefono "va in rete" ma si riprende la propria copia scaduta di recente,
+  // e le modifiche appena pubblicate non arrivano per una decina di minuti.
   event.respondWith(
-    fetch(req)
+    fetch(req, { cache: 'no-store' })
       .then(res => {
         // Copia aggiornata in cache per il prossimo avvio offline.
         const copy = res.clone();
