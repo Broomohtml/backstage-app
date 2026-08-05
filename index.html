@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Backstage — Inbox idee</title>
+<meta name="theme-color" content="#121417">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wordmark">
+    <span class="wordmark-dot"></span>
+    <span>BACKSTAGE</span>
+  </div>
+  <button id="settingsBtn" class="icon-btn" aria-label="Impostazioni">⚙</button>
+</header>
+
+<main>
+
+  <!-- STATO / METER -->
+  <section class="stage" id="stage">
+    <div class="meter" id="meter" aria-hidden="true">
+      <div class="meter-bar"></div><div class="meter-bar"></div><div class="meter-bar"></div>
+      <div class="meter-bar"></div><div class="meter-bar"></div><div class="meter-bar"></div>
+      <div class="meter-bar"></div><div class="meter-bar"></div><div class="meter-bar"></div>
+    </div>
+    <button id="recordBtn" class="record-btn" aria-label="Registra vocale">
+      <span class="record-icon"></span>
+    </button>
+    <p class="stage-label" id="stageLabel">TOCCA PER PARLARE</p>
+  </section>
+
+  <!-- CAPTURE FORM -->
+  <section class="rack">
+    <textarea id="noteText" placeholder="…oppure scrivi/incolla qui un'idea, un testo, un appunto" rows="3"></textarea>
+
+    <div id="imagePreviewWrap" class="image-preview-wrap hidden">
+      <img id="imagePreview" alt="Anteprima immagine">
+      <button id="removeImageBtn" class="chip-remove" aria-label="Rimuovi immagine">✕</button>
+    </div>
+
+    <div class="rack-controls">
+      <label class="ghost-btn" for="imageInput">📎 Immagine</label>
+      <input type="file" id="imageInput" accept="image/*" capture="environment" hidden>
+      <button id="saveBtn" class="primary-btn" disabled>Smista →</button>
+    </div>
+  </section>
+
+  <!-- STATUS LINE -->
+  <p id="statusLine" class="status-line"></p>
+
+  <!-- LOG -->
+  <section class="log">
+    <h2 class="log-title">ULTIME REGISTRAZIONI</h2>
+    <ul id="logList" class="log-list"></ul>
+    <p id="logEmpty" class="log-empty">Ancora nessun appunto salvato.</p>
+  </section>
+
+</main>
+
+<!-- SETTINGS MODAL -->
+<div id="settingsModal" class="modal hidden">
+  <div class="modal-panel">
+    <div class="modal-head">
+      <h2>Impostazioni</h2>
+      <button id="closeSettingsBtn" class="icon-btn" aria-label="Chiudi">✕</button>
+    </div>
+
+    <label class="field-label" for="apiKeyInput">Chiave API Anthropic</label>
+    <input type="password" id="apiKeyInput" placeholder="sk-ant-...">
+
+    <label class="field-label" for="groqKeyInput">Chiave API Groq (trascrizione vocale)</label>
+    <input type="password" id="groqKeyInput" placeholder="gsk_...">
+
+    <label class="field-label" for="vocabInput">Vocabolario tecnico (termini che usi spesso)</label>
+    <textarea id="vocabInput" rows="3" placeholder="Es: Arduino, ESP32, VS Code, kanban, laser cutter, stampante 3D, PROGETTI.md"></textarea>
+    <p class="field-hint">Aiuta la trascrizione a riconoscere meglio i tuoi termini tecnici ricorrenti.</p>
+
+    <label class="field-label" for="ghTokenInput">GitHub — Personal Access Token</label>
+    <input type="password" id="ghTokenInput" placeholder="ghp_...">
+
+    <label class="field-label" for="ghRepoInput">GitHub — repo (utente/nome-repo)</label>
+    <input type="text" id="ghRepoInput" placeholder="broomohtml/backstage-note">
+
+    <label class="field-label" for="projectsInput">I tuoi progetti (uno per riga)</label>
+    <textarea id="projectsInput" rows="6" placeholder="Es:&#10;Kanban Maker - Nome progetto&#10;Tracker palestra/inglese&#10;Marketing - idee campagne&#10;Tool HTML per il team"></textarea>
+    <p class="field-hint">Backstage userà questi nomi per capire dove smistare ogni appunto. Tienili aggiornati.</p>
+
+    <button id="saveSettingsBtn" class="primary-btn full">Salva impostazioni</button>
+    <p class="field-hint">Le chiavi restano solo su questo dispositivo (localStorage), non vengono mai inviate altrove se non alle API di Anthropic e GitHub.</p>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

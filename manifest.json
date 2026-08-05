@@ -1,0 +1,14 @@
+{
+  "name": "Backstage — Inbox idee",
+  "short_name": "Backstage",
+  "description": "Cattura vocali, testi e immagini e smistali automaticamente nei tuoi progetti.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#121417",
+  "theme_color": "#121417",
+  "orientation": "portrait",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
