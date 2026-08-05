@@ -75,30 +75,13 @@
     </div>
 
     <div class="tabs" role="tablist">
-      <button type="button" class="tab is-active" data-tab="chiavi" role="tab">CHIAVI</button>
-      <button type="button" class="tab" data-tab="progetti" role="tab">PROGETTI</button>
+      <button type="button" class="tab is-active" data-tab="progetti" role="tab">PROGETTI</button>
       <button type="button" class="tab" data-tab="vocabolario" role="tab">VOCABOLARIO</button>
-    </div>
-
-    <!-- TAB: CHIAVI -->
-    <div class="tab-panel is-active" data-panel="chiavi">
-      <label class="field-label" for="apiKeyInput">Chiave API Anthropic</label>
-      <input type="password" id="apiKeyInput" placeholder="sk-ant-…" autocomplete="off" autocapitalize="off" spellcheck="false">
-
-      <label class="field-label" for="groqKeyInput">Chiave API Groq (trascrizione vocale)</label>
-      <input type="password" id="groqKeyInput" placeholder="gsk_…" autocomplete="off" autocapitalize="off" spellcheck="false">
-
-      <label class="field-label" for="ghTokenInput">GitHub — Personal Access Token</label>
-      <input type="password" id="ghTokenInput" placeholder="github_pat_…" autocomplete="off" autocapitalize="off" spellcheck="false">
-
-      <label class="field-label" for="ghRepoInput">GitHub — repo (utente/nome-repo)</label>
-      <input type="text" id="ghRepoInput" placeholder="broomohtml/backstage-note" autocomplete="off" autocapitalize="off" spellcheck="false">
-
-      <p class="field-hint">Le chiavi restano solo su questo dispositivo. Vengono inviate unicamente ad Anthropic, Groq e GitHub.</p>
+      <button type="button" class="tab" data-tab="chiavi" role="tab">CHIAVI</button>
     </div>
 
     <!-- TAB: PROGETTI -->
-    <div class="tab-panel" data-panel="progetti">
+    <div class="tab-panel is-active" data-panel="progetti">
       <label class="field-label">I tuoi progetti</label>
       <div id="projectsChips" class="chip-list"></div>
       <div class="chip-add">
@@ -117,6 +100,23 @@
         <button type="button" class="chip-add-btn" id="vocabAddBtn" aria-label="Aggiungi termine">+</button>
       </div>
       <p class="field-hint">Non sono progetti: aiutano la trascrizione a riconoscere i tuoi termini tecnici quando parli veloce.</p>
+    </div>
+
+    <!-- TAB: CHIAVI -->
+    <div class="tab-panel" data-panel="chiavi">
+      <label class="field-label" for="apiKeyInput">Chiave API Anthropic</label>
+      <input type="password" id="apiKeyInput" placeholder="sk-ant-…" autocomplete="off" autocapitalize="off" spellcheck="false">
+
+      <label class="field-label" for="groqKeyInput">Chiave API Groq (trascrizione vocale)</label>
+      <input type="password" id="groqKeyInput" placeholder="gsk_…" autocomplete="off" autocapitalize="off" spellcheck="false">
+
+      <label class="field-label" for="ghTokenInput">GitHub — Personal Access Token</label>
+      <input type="password" id="ghTokenInput" placeholder="github_pat_…" autocomplete="off" autocapitalize="off" spellcheck="false">
+
+      <label class="field-label" for="ghRepoInput">GitHub — repo (utente/nome-repo)</label>
+      <input type="text" id="ghRepoInput" placeholder="Broomohtml/backstage-note" autocomplete="off" autocapitalize="off" spellcheck="false">
+
+      <p class="field-hint">Le chiavi restano solo su questo dispositivo. Vengono inviate unicamente ad Anthropic, Groq e GitHub.</p>
     </div>
 
     <button id="saveSettingsBtn" class="primary-btn full">Salva impostazioni</button>
