@@ -2,7 +2,7 @@
 // Cambia SOLO questo numero a ogni modifica, prima di ricaricare i file su GitHub.
 // Compare accanto a BACKSTAGE in alto: serve a capire a colpo d'occhio
 // se il telefono sta girando la versione vecchia o quella nuova.
-const APP_VERSION = 'v4';
+const APP_VERSION = 'v5';
 
 // ---------- storage helpers ----------
 const SETTINGS_KEY = 'backstage_settings_v1';
@@ -303,7 +303,14 @@ function renderLog(){
         <span class="log-time">${item.time}</span>
       </div>
       <div class="log-text">${escapeHtml(item.preview)}</div>
+      ${item.cleaned ? `<div class="log-full">${escapeHtml(item.cleaned)}</div>` : ''}
     `;
+    // Il testo ripulito e' gia' in memoria locale: toccando la card si apre
+    // senza nessuna chiamata di rete.
+    if(item.cleaned){
+      li.classList.add('is-expandable');
+      li.addEventListener('click', ()=> li.classList.toggle('is-open'));
+    }
     logList.appendChild(li);
   });
 }
@@ -457,7 +464,7 @@ saveBtn.addEventListener('click', async ()=>{
     const result = await categorize(content, hasImage, settings);
     setStatus(`Salvo in "${result.project}"…`);
     await commitMarkdown(result.project, result.title, result.cleaned, settings);
-    updateLogEntry(id, { project: result.project, preview: result.title, status:'ok' });
+    updateLogEntry(id, { project: result.project, preview: result.title, cleaned: result.cleaned, status:'ok' });
     setStatus(`Fatto — smistato in "${result.project}".`);
     noteText.value = '';
     pendingImageBase64 = null;
