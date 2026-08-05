@@ -241,6 +241,16 @@ textarea:focus, input:focus{
   font-size:10px;color:var(--text-muted);
 }
 .log-text{font-size:13.5px;color:var(--text);line-height:1.4;}
+.log-item.is-expandable{cursor:pointer;}
+.log-full{
+  display:none;
+  white-space:pre-wrap;
+  font-size:12.5px;line-height:1.5;
+  color:var(--text-muted);
+  border-top:1px solid var(--line);
+  padding-top:8px;margin-top:3px;
+}
+.log-item.is-open .log-full{display:block;}
 .log-empty{color:var(--text-muted);font-size:13px;}
 
 /* ---- modal ---- */
@@ -288,10 +298,13 @@ textarea:focus, input:focus{
   display:none;
   flex-direction:column;
   gap:10px;
-  /* Altezza uguale per tutte e tre: cambiando scheda il pannello
-     non si accorcia e i bottoni non ballano su e giù. */
-  min-height:372px;
+  /* Altezza IDENTICA per tutte e tre, non solo minima: la scheda chiavi
+     ha piu' contenuto delle altre e con min-height sforava di una decina
+     di pixel, facendo ballare il bottone Salva. Qui l'eccedenza scorre. */
+  height:372px;
+  overflow-y:auto;
 }
+.tab-panel > *{flex-shrink:0;}
 .tab-panel.is-active{display:flex;}
 
 /* ---- liste a etichette (progetti, vocabolario) ---- */
