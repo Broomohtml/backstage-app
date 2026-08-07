@@ -347,6 +347,65 @@ textarea:focus, input:focus{
 }
 .chip-add-btn:active{transform:scale(.96);}
 
+/* ---- striscia progetti in corso, in cima alla home ---- */
+.active-strip{
+  display:flex;flex-wrap:wrap;gap:6px;
+  padding:10px 20px;
+  background:var(--surface);
+  border-bottom:1px solid var(--line);
+}
+.active-tag{
+  font-family:var(--mono);
+  font-size:10px;letter-spacing:.08em;
+  text-transform:uppercase;
+  color:var(--bg);
+  background:var(--amber);
+  border-radius:5px;
+  padding:4px 8px;
+}
+
+/* ---- lista progetti con stato ---- */
+.proj-list{
+  display:flex;flex-direction:column;gap:6px;
+  min-height:150px;max-height:210px;overflow-y:auto;
+  background:var(--surface-2);
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:10px;
+}
+.proj-row{
+  display:flex;align-items:center;gap:8px;
+  background:var(--bg);
+  border:1px solid var(--line);
+  border-radius:8px;
+  padding:7px 6px 7px 8px;
+}
+.proj-stato{
+  flex:0 0 auto;min-width:76px;
+  font-family:var(--mono);
+  font-size:9px;letter-spacing:.07em;
+  background:none;
+  color:var(--text-muted);
+  border:1px solid var(--line);
+  border-radius:4px;
+  padding:4px 5px;
+  cursor:pointer;
+}
+.proj-stato.is-attivo{
+  background:var(--amber);
+  border-color:var(--amber);
+  color:#1B1200;
+}
+.proj-stato.is-background{
+  border-color:var(--cyan);
+  color:var(--cyan);
+}
+.proj-nome{
+  flex:1;min-width:0;
+  font-size:13px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+
 .field-label{
   font-family:var(--mono);
   font-size:11px;letter-spacing:.08em;
