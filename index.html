@@ -23,6 +23,9 @@
   <button id="settingsBtn" class="icon-btn" aria-label="Impostazioni">⚙</button>
 </header>
 
+<!-- PROGETTI IN CORSO -->
+<section class="active-strip hidden" id="activeStrip" aria-label="Progetti in corso"></section>
+
 <main>
 
   <!-- STATO / METER -->
@@ -83,12 +86,12 @@
     <!-- TAB: PROGETTI -->
     <div class="tab-panel is-active" data-panel="progetti">
       <label class="field-label">I tuoi progetti</label>
-      <div id="projectsChips" class="chip-list"></div>
+      <div id="projectsList" class="proj-list"></div>
       <div class="chip-add">
         <input type="text" id="projectAddInput" placeholder="Nome del progetto" autocomplete="off" autocapitalize="sentences" spellcheck="false">
         <button type="button" class="chip-add-btn" id="projectAddBtn" aria-label="Aggiungi progetto">+</button>
       </div>
-      <p class="field-hint">Backstage usa questi nomi per capire dove smistare ogni appunto. Se un appunto non c'entra con nessuno, finisce in “Da rivedere”.</p>
+      <p class="field-hint">Tocca l'etichetta di stato per cambiarla: fermo → in corso → background. I progetti <b>in corso</b> compaiono in cima alla schermata principale; i <b>background</b> sono quelli sempre aperti, che non finiscono mai.</p>
     </div>
 
     <!-- TAB: VOCABOLARIO -->
