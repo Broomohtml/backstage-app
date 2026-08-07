@@ -2,7 +2,7 @@
 // Cambia SOLO questo numero a ogni modifica, prima di ricaricare i file su GitHub.
 // Compare accanto a BACKSTAGE in alto: serve a capire a colpo d'occhio
 // se il telefono sta girando la versione vecchia o quella nuova.
-const APP_VERSION = 'v5';
+const APP_VERSION = 'v6';
 
 // ---------- storage helpers ----------
 const SETTINGS_KEY = 'backstage_settings_v1';
@@ -108,12 +108,117 @@ function createChipEditor(listEl, inputEl, addBtn, emptyText){
   };
 }
 
-const projectsEditor = createChipEditor(
-  document.getElementById('projectsChips'),
-  document.getElementById('projectAddInput'),
-  document.getElementById('projectAddBtn'),
-  'Nessun progetto ancora.'
-);
+// ---------- progetti con stato ----------
+// I progetti non sono etichette tutte uguali come il vocabolario: hanno uno
+// stato. "background" sono i sempreverdi, quelli che non finiscono mai.
+const STATI = ['fermo', 'attivo', 'background'];
+const STATO_LABEL = { fermo: 'FERMO', attivo: 'IN CORSO', background: 'BACKGROUND' };
+const PESO_STATO = { attivo: 0, background: 1, fermo: 2 };
+
+let projects = [];
+let projectStates = {};
+
+const projectsList = document.getElementById('projectsList');
+const projectAddInput = document.getElementById('projectAddInput');
+const projectAddBtn = document.getElementById('projectAddBtn');
+const activeStrip = document.getElementById('activeStrip');
+
+function statoDi(nome){
+  return projectStates[nome] || 'fermo';
+}
+
+function caricaProgetti(s){
+  projects = (s.projects || []).slice();
+  projectStates = Object.assign({}, s.projectStates || {});
+}
+
+function renderProjects(){
+  projectsList.innerHTML = '';
+  if(projects.length === 0){
+    const vuoto = document.createElement('p');
+    vuoto.className = 'chip-empty';
+    vuoto.textContent = 'Nessun progetto ancora.';
+    projectsList.appendChild(vuoto);
+    return;
+  }
+
+  const ordinati = projects.slice().sort((a, b)=>{
+    const d = PESO_STATO[statoDi(a)] - PESO_STATO[statoDi(b)];
+    return d !== 0 ? d : a.localeCompare(b, 'it');
+  });
+
+  ordinati.forEach(nome=>{
+    const riga = document.createElement('div');
+    riga.className = 'proj-row';
+
+    const stato = document.createElement('button');
+    stato.type = 'button';
+    stato.className = 'proj-stato is-' + statoDi(nome);
+    stato.textContent = STATO_LABEL[statoDi(nome)];
+    stato.setAttribute('aria-label', 'Cambia stato di ' + nome);
+    stato.addEventListener('click', ()=>{
+      const i = STATI.indexOf(statoDi(nome));
+      projectStates[nome] = STATI[(i + 1) % STATI.length];
+      renderProjects();
+    });
+
+    const label = document.createElement('span');
+    label.className = 'proj-nome';
+    label.textContent = nome;
+
+    const x = document.createElement('button');
+    x.type = 'button';
+    x.className = 'chip-x';
+    x.textContent = '✕';
+    x.setAttribute('aria-label', 'Rimuovi ' + nome);
+    x.addEventListener('click', ()=>{
+      projects = projects.filter(p => p !== nome);
+      delete projectStates[nome];
+      renderProjects();
+    });
+
+    riga.appendChild(stato);
+    riga.appendChild(label);
+    riga.appendChild(x);
+    projectsList.appendChild(riga);
+  });
+}
+
+function aggiungiProgetti(){
+  const parti = projectAddInput.value.split(/[,;\n]/).map(s => s.trim()).filter(Boolean);
+  parti.forEach(p=>{
+    const doppione = projects.some(v => v.toLowerCase() === p.toLowerCase());
+    if(!doppione){
+      projects.push(p);
+      projectStates[p] = 'fermo';
+    }
+  });
+  projectAddInput.value = '';
+  renderProjects();
+  projectAddInput.focus();
+}
+
+projectAddBtn.addEventListener('click', aggiungiProgetti);
+projectAddInput.addEventListener('keydown', (e)=>{
+  if(e.key === 'Enter'){ e.preventDefault(); aggiungiProgetti(); }
+});
+
+// Striscia in cima alla schermata principale: solo i progetti in corso.
+function renderActiveStrip(){
+  const attivi = projects.filter(p => statoDi(p) === 'attivo');
+  activeStrip.innerHTML = '';
+  if(attivi.length === 0){
+    activeStrip.classList.add('hidden');
+    return;
+  }
+  activeStrip.classList.remove('hidden');
+  attivi.forEach(nome=>{
+    const tag = document.createElement('span');
+    tag.className = 'active-tag';
+    tag.textContent = nome;
+    activeStrip.appendChild(tag);
+  });
+}
 
 const vocabEditor = createChipEditor(
   document.getElementById('vocabChips'),
@@ -129,7 +234,8 @@ function openSettings(){
   groqKeyInput.value = s.groqKey || '';
   ghTokenInput.value = s.ghToken || '';
   ghRepoInput.value = s.ghRepo || '';
-  projectsEditor.set(s.projects || []);
+  caricaProgetti(s);
+  renderProjects();
   vocabEditor.set(s.vocab ? s.vocab.split(',').map(v => v.trim()).filter(Boolean) : []);
   settingsModal.classList.remove('hidden');
 }
@@ -146,8 +252,10 @@ saveSettingsBtn.addEventListener('click', ()=>{
     vocab: vocabEditor.get().join(', '),
     ghToken: ghTokenInput.value.trim(),
     ghRepo: ghRepoInput.value.trim(),
-    projects: projectsEditor.get()
+    projects: projects.slice(),
+    projectStates: projectStates
   });
+  renderActiveStrip();
   closeSettings();
   refreshSaveButton();
 });
@@ -503,6 +611,8 @@ document.getElementById('forceUpdateBtn').addEventListener('click', async ()=>{
 // ---------- init ----------
 document.getElementById('appVersion').textContent = APP_VERSION;
 document.getElementById('appVersionFoot').textContent = APP_VERSION;
+caricaProgetti(getSettings());
+renderActiveStrip();
 renderLog();
 refreshSaveButton();
 
