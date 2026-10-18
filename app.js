@@ -2,7 +2,7 @@
 // Cambia SOLO questo numero a ogni modifica, prima di ricaricare i file su GitHub.
 // Compare accanto a BACKSTAGE in alto: serve a capire a colpo d'occhio
 // se il telefono sta girando la versione vecchia o quella nuova.
-const APP_VERSION = 'v6';
+const APP_VERSION = 'v7';
 
 // ---------- storage helpers ----------
 const SETTINGS_KEY = 'backstage_settings_v1';
@@ -411,6 +411,7 @@ function renderLog(){
         <span class="log-time">${item.time}</span>
       </div>
       <div class="log-text">${escapeHtml(item.preview)}</div>
+      ${item.error ? `<div class="log-error">${escapeHtml(item.error)}</div>` : ''}
       ${item.cleaned ? `<div class="log-full">${escapeHtml(item.cleaned)}</div>` : ''}
     `;
     // Il testo ripulito e' gia' in memoria locale: toccando la card si apre
@@ -467,7 +468,9 @@ Rispondi SOLO con un oggetto JSON, senza markdown, nel formato:
     },
     body: JSON.stringify({
       model: 'claude-sonnet-4-6',
-      max_tokens: 500,
+      // È solo un tetto: si paga quello che Claude scrive davvero. Con 500 i
+      // vocali lunghi venivano tagliati a metà e il JSON arrivava rotto.
+      max_tokens: 4000,
       system: systemPrompt,
       messages: [{ role:'user', content: userContent }]
     })
@@ -478,9 +481,16 @@ Rispondi SOLO con un oggetto JSON, senza markdown, nel formato:
     throw new Error(`Claude API ${res.status}: ${errText.slice(0,200)}`);
   }
   const data = await res.json();
+  if(data.stop_reason === 'max_tokens'){
+    throw new Error('Appunto troppo lungo: la risposta di Claude è stata tagliata. Dividilo in due.');
+  }
   const raw = data.content.map(b=>b.text || '').join('').trim();
   const cleanedJson = raw.replace(/^```json\s*|^```\s*|```$/g, '').trim();
-  return JSON.parse(cleanedJson);
+  try{
+    return JSON.parse(cleanedJson);
+  }catch(e){
+    throw new Error('Claude ha risposto in un formato che non capisco (' + e.message + ').');
+  }
 }
 
 // ---------- GitHub commit ----------
@@ -581,7 +591,7 @@ saveBtn.addEventListener('click', async ()=>{
     refreshSaveButton();
   }catch(err){
     console.error(err);
-    updateLogEntry(id, { status:'error', project:'errore' });
+    updateLogEntry(id, { status:'error', project:'errore', error: err.message });
     setStatus('Errore: ' + err.message, true);
     saveBtn.disabled = false;
   }
